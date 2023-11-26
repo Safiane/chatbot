@@ -186,3 +186,52 @@ def idf(directory_cleaned, files_names):
 
 #idf_scores = idf(directory_cleaned, files_names)
 
+#Score final
+
+def tfidf_matrice(directory_cleaned, files_names):
+    #matrice TF
+    tf_matrice = {}
+    for filename in files_names:
+        chemin_fichier = os.path.join(directory_cleaned, str(filename))
+        if os.path.isfile(chemin_fichier):
+            with open(chemin_fichier, 'r') as file:
+                content = file.read()
+                tf_matrice[filename] = count_occ(content)
+
+    total_documents = len(files_names)
+
+    #scores IDF
+    doc_frequency = {}
+    for filename, tf_scores in tf_matrice.items():
+        for word in tf_scores:
+            doc_frequency[word] = doc_frequency.get(word, 0) + 1
+
+    idf_scores = calculate_idf(total_documents, doc_frequency)
+
+    #matrice TF-IDF
+    tfidf_matrice = {}
+    for filename, tf_scores in tf_matrice.items():
+        tfidf_vector = {}
+        for word, tf in tf_scores.items():
+            if word in idf_scores:
+                tfidf_vector[word] = tf * idf_scores[word]
+        tfidf_matrice[filename] = tfidf_vector
+
+    return tfidf_matrice
+
+#à voir plus tard
+def transpose_matrice(matrice):
+    num_l = len(matrice)
+    num_c = len(matrice[0])
+
+    transpose_matrice = []
+
+    for i in range(num_c):
+        transpose_l = []
+
+        for j in range(num_l):
+            transpose_l.append(matrice[j][i])
+        transpose_matrice.append(transpose_l)
+
+    return transpose_matrice
+
