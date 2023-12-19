@@ -1,69 +1,48 @@
 from functions import *
-from menu import *
+from test import *
 
-def afficher_menu():
-    print("Menu:")
-    print("1. Afficher les mots les moins importants")
-    print("2. Afficher les mots ayant le score TD-IDF le plus élevé")
-    print("3. Indiquer les mots les plus répétés par un président")
-    print("4. Indiquer les noms des présidents qui ont parlé de d'un mot et celui qui l’a répété le plus de fois")
-    print("5. Indiquer le premier président à parler d'un mot")
-    print("6. Afficher les mots que tous les présidents ont évoqués hormis les mots dits « non importants »")
-    print("0. Quitter")
+directory = "C:/Users/safia/PycharmProjects/chatbot/speeches"
+cleaned_directory = "cleaned"
+directory_cleaned = "C:/Users/safia/PycharmProjects/chatbot/cleaned"
+question_starters = {
+    "Comment": "Après analyse, ",
+    "Pourquoi": "Car, ",
+    "Peux-tu": "Oui, bien sûr!"
+}
 
-mots_moins_importants = calculer_mots_moins_importants(tfidf_matrice)
+def print_menu():
+    print("\nMenu:")
+    print("1. Mode Chatbot")
+    print("2. Quitter")
 
-
-if __name__ == "__main__":
+def chatbot_mode():
     while True:
-        afficher_menu()
-        choix = input("Entrez le numéro de votre choix (0 pour quitter) : ")
+        question = input("Posez une question (ou tapez '2' pour quitter): ")
 
-        if choix == "1":
-            print("Les mots moins importants sont :", mots_moins_importants)
-        elif choix == "2":
-            result = mots_importants(tfidf_matrice)
-            print("Les mots ayant le score TD-IDF le plus élevé sont :", result)
-        elif choix == "3":
-            print("Choisissez un président :"
-                  "1) Chirac"
-                  "2) Giscard d'Estaing"
-                  "3) Hollande"
-                  "4) Macron"
-                  "5) Mitterrand"
-                  "6) Sarkozy")
-            presidents = {
-                '1': 'Chirac',
-                '2': 'Giscard dEstaing',
-                '3': 'Hollande',
-                '4': 'Macron',
-                '5': 'Mitterrand',
-                '6': 'Sarkozy'
-            }
-
-            choix2 = input("Entrez le numéro de votre choix : ")
-
-            while choix2 not in presidents:
-                choix2 = input("Entrez le numéro de votre choix : ")
-
-            pres = presidents[choix2]
-
-            result = mots_comm_pre(pres, tf_matrice)
-            print("Le mot le plus répété par le président",pres," est :", result)
-        elif choix == "4":
-            word=str(input("Saisir un mot :"))
-            presidents, most_mentions_president = word_president(word, tf_matrice)
-            print("Les présidents qui ont parlé de",word," sont :", presidents)
-            print("Le président qui l'a répété le plus de fois est :", most_mentions_president)
-        elif choix == "5":
-            word=str(input("Saisir un mot :"))
-            result=first_president_to_mention(word, tf_matrice)
-            print("Le premier président à avoir parlé de",word,"est : ",result)
-        elif choix == "6":
-            result = common_words(tf_matrice, mots_moins_importants)
-            print("Les mots que tous les présidents ont évoqués hormis les mots dits « non importants » sont :", result)
-        elif choix == "0":
-            print("Programme terminé.")
+        if question.lower() == '2':
             break
-        else:
-            print("Choix invalide. Veuillez entrer un numéro valide.")
+        question_tokens = tokenize_question(question)
+        comm_terms = find_common_terms(question, cleaned_directory, files_names)
+        tf_idf_question = calculate_tfidf_vector(question_tokens, tf_scores, idf_scores)
+        most_pertinent_doc = document_pertinent(tf_idf_matrix, tf_idf_question, files_names)
+        most_relevant_word = find_most_relevant_word(question, tf_scores, idf_scores)
+        generated_response = response(most_pertinent_doc, most_relevant_word, question)
+        print("Réponse:", generated_response)
+
+while True:
+    print_menu()
+    choice = input("Choisissez une option (1 ou 2): ")
+
+    if choice == '1':
+        chatbot_mode()
+    elif choice == '2':
+        print("Programme terminé.")
+        break
+    else:
+        print("Veuillez choisir une option valide.")
+
+
+
+
+
+
